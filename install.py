@@ -21,8 +21,8 @@ tools_type_map = {
 
 tools ={
     1: {'tip':'一键更新：sim2real运控代码',                 'type':CODE_UPDATES,     'tool':'tools/tool_install_sim2real.py' ,'dep':[] },
-    # 2: {'tip':'一键安装:github桌面版(小鱼常用的github客户端)',             'type':INSTALL_SOFTWARE,     'tool':'tools/tool_install_github_desktop.py' ,'dep':[] },
-    # 3: {'tip':'一键安装:rosdep(小鱼的rosdepc,又快又好用)',                 'type':INSTALL_ROS,    'tool':'tools/tool_config_rosdep.py' ,'dep':[] },
+    2: {'tip':'一键安装:rl运控环境（openvino,pinocchio,eigen）',             'type':INSTALL_SOFTWARE,     'tool':'tools/tool_install_github_desktop.py' ,'dep':[] },
+    3: {'tip':'一键安装:',                 'type':INSTALL_SOFTWARE,    'tool':'tools/tool_config_rosdep.py' ,'dep':[] },
     # 4: {'tip':'一键配置:ROS环境(快速更新ROS环境设置,自动生成环境选择)',     'type':INSTALL_ROS,     'tool':'tools/tool_config_rosenv.py' ,'dep':[] },
     # 5: {'tip':'一键配置:系统源(更换系统源,支持全版本Ubuntu系统)',           'type':CONFIG_TOOL,    'tool':'tools/tool_config_system_source.py' ,'dep':[1] },
     # 6: {'tip':'一键安装:NodeJS环境',      'type':INSTALL_SOFTWARE,     'tool':'tools/tool_install_nodejs.py' ,'dep':[] },
@@ -98,15 +98,19 @@ def main():
     
 
     tip =tr.tr("""===============================================================================
-======一键安装工具=======
-===============================================================================
+============================一键安装工具=========================================
     """)
-    
+    book = tr.tr(""" _____       __     ______     __   __     ______     ______    
+                    /\  __-.    /\ \   /\  __ \   /\ "-.\ \   /\  ___\   /\  __ \   
+                    \ \ \/\ \  _\_\ \  \ \  __ \  \ \ \-.  \  \ \ \__ \  \ \ \/\ \  
+                    \ \____- /\_____\  \ \_\ \_\  \ \_\\"\_\  \ \_____\  \ \_____\ 
+                    \/____/ \/_____/   \/_/\/_/   \/_/ \/_/   \/_____/   \/_____/ 
+                                                                """)
     PrintUtils.print_delay(tip,0.001)
-    # PrintUtils.print_delay(book,0.001)
+    PrintUtils.print_delay(book,0.001)
     # download tools
-    code,result = ChooseWithCategoriesTask(tool_categories, tips=tr.tr("---众多工具，等君来用---"),categories=tools_type_map).run()
-    if code==0: PrintUtils().print_success(tr.tr("是觉得没有合胃口的菜吗？那快联系的小鱼增加菜单吧~"))
+    code,result = ChooseWithCategoriesTask(tool_categories, tips=tr.tr("tools too more,wecome."),categories=tools_type_map).run()
+    if code==0: PrintUtils().print_success(tr.tr("HightTorque update..."))
     else: 
         download_tools(code,tools,url_prefix)
         run_tool_file(tools[code]['tool'].replace("/","."))

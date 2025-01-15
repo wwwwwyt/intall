@@ -9,13 +9,13 @@ class Tool(BaseTool):
     def __init__(self):
         self.type = BaseTool.TYPE_INSTALL
         self.name = "更新并编译 sim2real_master 工程"
-        self.author = '小鱼'
+        self.author = 'yt_w'
 
     def run(self):
         # 正式的运行
         # ========= 配置部分，请根据需要修改 =========
         REPO_URL = "git@github.com:HighTorque-Locomotion/sim2real_master.git"  # 仓库的 SSH 地址
-        REPO_BRANCH = "main"  # 要拉取的分支名称
+        REPO_BRANCH = "joy_teleop_control"  # 要拉取的分支名称
         REPO_DIR_NAME = "sim2real_master"
         HOME_DIR = os.path.expanduser("~")
         LOCAL_DIR = os.path.join(HOME_DIR, REPO_DIR_NAME)
