@@ -81,8 +81,8 @@ def main():
 
     PrintUtils.print_success(tr.tr("已为您切换语言至当前所在国家语言:")+tr.lang)
     if tr.country != 'CN':
-        PrintUtils.print_success(tr.tr("检测到当前不在CN,切换服务地址为:https://raw.githubusercontent.com/fishros/install/master/"))
-        url_prefix = 'https://raw.githubusercontent.com/fishros/install/master/'
+        PrintUtils.print_success(tr.tr("检测到当前不在CN,切换服务地址为:https://raw.githubusercontent.com/wwwwwyt/intall/refs/heads/master/"))
+        url_prefix = 'https://raw.githubusercontent.com/wwwwwyt/intall/refs/heads/master/'
 
 
     # check base config

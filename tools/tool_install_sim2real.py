@@ -37,9 +37,9 @@ class Tool(BaseTool):
 
         # ========= 开始安装流程 =========
         # 0. 检查源目录是否存在
-        if not os.path.isdir(SOURCE_DIR):
-            PrintUtils.print_error("在当前目录下找不到 {} 文件夹，请确保脚本与工作空间在同级目录。".format(WORKSPACE_NAME))
-            return
+        # if not os.path.isdir(SOURCE_DIR):
+        #     PrintUtils.print_error("在当前目录下找不到 {} 文件夹，请确保脚本与工作空间在同级目录。".format(WORKSPACE_NAME))
+        #     return
 
         # 1. 如果 /opt 下已有 hightorque_pi_rl，先删除
         if os.path.isdir(TARGET_DIR):
@@ -48,23 +48,29 @@ class Tool(BaseTool):
 
         # 2. 复制新的工作空间到 /opt
         PrintUtils.print_info("复制 {} 到 /opt 目录...".format(WORKSPACE_NAME))
-        CmdTask("cd /opt && sudo git clone https://controll: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@github.com/HighTorque-Locomotion/sim2real_master.git".format(SOURCE_DIR)).run()
+        # CmdTask("git clone -b joy_teleop_control git@github.com:HighTorque-Locomotion/sim2real_master.git && sudo mv ~/intall/sim2real_master /opt/").run()
+        clone_command = "git clone -b joy_teleop_control git@github.com:HighTorque-Locomotion/sim2real_master.git && sudo mv ~/intall/sim2real_master /opt/"
+        clone_return_code = CmdTask(clone_command).run()
+
+        if clone_return_code != 0:
+            PrintUtils.print_error("克隆仓库失败，请检查网络连接和仓库访问权限。")
+            return
         PrintUtils.print_info("复制完成。")
 
-        # 3. 检查并加载 ROS 环境
-        ros_setup = "/opt/ros/{}/setup.bash".format(ROS_DISTRO)
-        if not os.path.exists(ros_setup):
-            PrintUtils.print_error("找不到 {}，请检查 ROS 是否正确安装。".format(ros_setup))
-            return
+        # # 3. 检查并加载 ROS 环境
+        # ros_setup = "/opt/ros/{}/setup.bash".format(ROS_DISTRO)
+        # if not os.path.exists(ros_setup):
+        #     PrintUtils.print_error("找不到 {}，请检查 ROS 是否正确安装。".format(ros_setup))
+        #     return
 
-        # 4. 切换到工作空间并执行 catkin build
-        PrintUtils.print_info("开始编译 {} 工作空间...".format(WORKSPACE_NAME))
-        # 构建编译命令，确保加载 ROS 环境
-        build_command = "cd {} && source {} && catkin build".format(TARGET_DIR, ros_setup)
-        CmdTask(build_command, use_bash=True).run()
+        # # 4. 切换到工作空间并执行 catkin build
+        # PrintUtils.print_info("开始编译 {} 工作空间...".format(WORKSPACE_NAME))
+        # # 构建编译命令，确保加载 ROS 环境
+        # build_command = "cd {} && source {} && catkin build".format(TARGET_DIR, ros_setup)
+        # CmdTask(build_command, use_bash=True).run()
 
-        # 5. 提示完成
-        PrintUtils.print_info("{} 已安装/更新至 {} 并成功编译。".format(WORKSPACE_NAME, TARGET_DIR))
+        # # 5. 提示完成
+        # PrintUtils.print_info("{} 已安装/更新至 {} 并成功编译。".format(WORKSPACE_NAME, TARGET_DIR))
 
         # 询问是否重启
         answer = input("输入 y 或 Y 确认重启，或按其他任意键取消: ")
