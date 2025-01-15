@@ -66,9 +66,9 @@ def main():
 
     # download translations
     CmdTask("wget {} -O /tmp/HighTorque_install{} --no-check-certificate".format(translator_url,translator_url.replace(url_prefix,''))).run()
-    PrintUtils.print_delay("as",0.001)
+
     importlib.import_module("tools.translation.translator").Linguist()
-    PrintUtils.print_delay("as___-----",0.001)
+
     from tools.base import tr
     import copy
 
@@ -79,10 +79,10 @@ def main():
     # 使用量统计 
     # CmdTask("wget https://fishros.org.cn/forum/topic/1733 -O /tmp/t1733 -q  --timeout 10 && rm -rf /tmp/t1733").run()
 
-    # PrintUtils.print_success(tr.tr("已为您切换语言至当前所在国家语言:")+tr.lang)
-    # if tr.country != 'CN':
-    #     PrintUtils.print_success(tr.tr("检测到当前不在CN,切换服务地址为:https://raw.githubusercontent.com/fishros/install/master/"))
-    #     url_prefix = 'https://raw.githubusercontent.com/fishros/install/master/'
+    PrintUtils.print_success(tr.tr("已为您切换语言至当前所在国家语言:")+tr.lang)
+    if tr.country != 'CN':
+        PrintUtils.print_success(tr.tr("检测到当前不在CN,切换服务地址为:https://raw.githubusercontent.com/fishros/install/master/"))
+        url_prefix = 'https://raw.githubusercontent.com/fishros/install/master/'
 
 
     # check base config
@@ -96,25 +96,12 @@ def main():
         return False
     PrintUtils.print_success(tr.tr("基础检查通过..."))
     
-    book = tr.tr("""
-                        .-~~~~~~~~~-._       _.-~~~~~~~~~-.
-                    __.'              ~.   .~              `.__
-                .'//     开卷有益        \./     书山有路     \\ `.
-                .'// 可以多看看小鱼的文章  | 关注B站鱼香ROS机器人 \\ `.
-            .'// .-~~~~~~~~~~~~~~-._     |     _,-~~~~~~~~~~~. \\`.
-            .'//.-"                 `-.  |  .-'                 "-.\\`.
-        .'//______.============-..   \ | /   ..-============.______\\`.
-        .'______________________________\|/______________________________`
-        ----------------------------------------------------------------------""")
 
     tip =tr.tr("""===============================================================================
 ======一键安装工具=======
 ===============================================================================
     """)
-    end_tip = tr.tr("""===============================================================================
-如果觉得工具好用,请给个star,如果你想和小鱼一起编写工具,请关注B站/公众号<鱼香ROS>,联系小鱼
-更多工具教程，请访问鱼香ROS官方网站:http://fishros.com
-    """)
+    
     PrintUtils.print_delay(tip,0.001)
     # PrintUtils.print_delay(book,0.001)
     # download tools
