@@ -1451,8 +1451,8 @@ class BaseTool():
 
         self.name = name
         self.type = tool_type
-        self.author = '小鱼'
-        self.author_email = 'fishros@foxmail.com'
+        self.author = 'HightTorque'
+        self.author_email = 'service@hightorque.cn '
 
     def init(self):
         # 初始化部分

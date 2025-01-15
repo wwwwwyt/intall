@@ -20,7 +20,7 @@ tools_type_map = {
 
 
 tools ={
-    1: {'tip':'一键更新：sim2real运控代码',                 'type':CODE_UPDATES,     'tool':'tools/tool_install_ros.py' ,'dep':[] },
+    1: {'tip':'一键更新：sim2real运控代码',                 'type':CODE_UPDATES,     'tool':'tools/tool_install_sim2real.py' ,'dep':[] },
     # 2: {'tip':'一键安装:github桌面版(小鱼常用的github客户端)',             'type':INSTALL_SOFTWARE,     'tool':'tools/tool_install_github_desktop.py' ,'dep':[] },
     # 3: {'tip':'一键安装:rosdep(小鱼的rosdepc,又快又好用)',                 'type':INSTALL_ROS,    'tool':'tools/tool_config_rosdep.py' ,'dep':[] },
     # 4: {'tip':'一键配置:ROS环境(快速更新ROS环境设置,自动生成环境选择)',     'type':INSTALL_ROS,     'tool':'tools/tool_config_rosenv.py' ,'dep':[] },
