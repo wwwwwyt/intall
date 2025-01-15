@@ -1,81 +1,86 @@
 # -*- coding: utf-8 -*-
-from .base import BaseTool
-from .base import PrintUtils, CmdTask, FileUtils, AptUtils, ChooseTask
-from .base import osversion
-from .base import run_tool_file
 import os
+import getpass
+import subprocess
+from .base import BaseTool
+from .base import PrintUtils, CmdTask
 
 class Tool(BaseTool):
     def __init__(self):
         self.type = BaseTool.TYPE_INSTALL
-        self.name = "高扭矩 PI RL 工作空间部署和编译"
-        self.author = 'yt_w'
+        self.name = "更新并编译 sim2real_master 工程"
+        self.author = '小鱼'
 
     def run(self):
-        PrintUtils.print_info("开始运行了 aaaaaaaaa")
         # 正式的运行
-        SWAP_SIZE = "10G"
-        SWAP_FILE = "/swapfile"
+        # ========= 配置部分，请根据需要修改 =========
+        REPO_URL = "git@github.com:HighTorque-Locomotion/sim2real_master.git"  # 仓库的 SSH 地址
+        REPO_BRANCH = "main"  # 要拉取的分支名称
+        REPO_DIR_NAME = "sim2real_master"
+        HOME_DIR = os.path.expanduser("~")
+        LOCAL_DIR = os.path.join(HOME_DIR, REPO_DIR_NAME)
+        ROS_DISTRO = "noetic"  # 根据您的 ROS 版本修改，例如 "melodic"、"noetic" 等
 
-        # 检查是否存在 swap 文件
-        if not os.path.exists(SWAP_FILE):
-            PrintUtils.print_info("创建 swap 文件：{}，大小：{} ...".format(SWAP_FILE, SWAP_SIZE))
-            CmdTask("sudo fallocate -l {} {}".format(SWAP_SIZE, SWAP_FILE)).run()
-            CmdTask("sudo chmod 600 {}".format(SWAP_FILE)).run()
-            CmdTask("sudo mkswap {}".format(SWAP_FILE)).run()
-            CmdTask("sudo swapon {}".format(SWAP_FILE)).run()
-            PrintUtils.print_info("Swap 已启用，当前可用内存：")
-            CmdTask("free -h").run()
-        else:
-            PrintUtils.print_info("检测到 {} 已经作为 swap 启用，跳过创建。".format(SWAP_FILE))
-
-        # ========= 配置部分，根据需要修改 =========
-        ROS_DISTRO = "noetic"  # ROS 发行版，如 melodic, noetic 等
-        WORKSPACE_NAME = "hightorque_pi_rl"  # 工作空间名称
-        SOURCE_DIR = os.path.abspath(os.path.join(os.getcwd(), "..", WORKSPACE_NAME))
-        TARGET_DIR = "/opt/{}".format(WORKSPACE_NAME)
-
-        # ========= 开始安装流程 =========
-        # 0. 检查源目录是否存在
-        # if not os.path.isdir(SOURCE_DIR):
-        #     PrintUtils.print_error("在当前目录下找不到 {} 文件夹，请确保脚本与工作空间在同级目录。".format(WORKSPACE_NAME))
-        #     return
-
-        # 1. 如果 /opt 下已有 hightorque_pi_rl，先删除
-        if os.path.isdir(TARGET_DIR):
-            PrintUtils.print_info("检测到 {} 已存在，执行替换操作...".format(TARGET_DIR))
-            CmdTask("sudo rm -rf {}".format(TARGET_DIR)).run()
-
-        # 2. 复制新的工作空间到 /opt
-        PrintUtils.print_info("复制 {} 到 /opt 目录...".format(WORKSPACE_NAME))
-        # CmdTask("git clone -b joy_teleop_control git@github.com:HighTorque-Locomotion/sim2real_master.git && sudo mv ~/intall/sim2real_master /opt/").run()
-        clone_command = "git clone -b joy_teleop_control git@github.com:HighTorque-Locomotion/sim2real_master.git && sudo mv ~/intall/sim2real_master /opt/"
-        clone_return_code = CmdTask(clone_command).run()
-
-        if clone_return_code != 0:
-            PrintUtils.print_error("克隆仓库失败，请检查网络连接和仓库访问权限。")
+        # ========= 开始执行步骤 =========
+        # 1. 检查是否以 root 用户身份运行脚本
+        current_user = getpass.getuser()
+        if current_user == 'root':
+            PrintUtils.print_error("请不要以 root 用户身份运行此脚本。")
             return
-        PrintUtils.print_info("复制完成。")
-
-        # # 3. 检查并加载 ROS 环境
-        # ros_setup = "/opt/ros/{}/setup.bash".format(ROS_DISTRO)
-        # if not os.path.exists(ros_setup):
-        #     PrintUtils.print_error("找不到 {}，请检查 ROS 是否正确安装。".format(ros_setup))
-        #     return
-
-        # # 4. 切换到工作空间并执行 catkin build
-        # PrintUtils.print_info("开始编译 {} 工作空间...".format(WORKSPACE_NAME))
-        # # 构建编译命令，确保加载 ROS 环境
-        # build_command = "cd {} && source {} && catkin build".format(TARGET_DIR, ros_setup)
-        # CmdTask(build_command, use_bash=True).run()
-
-        # # 5. 提示完成
-        # PrintUtils.print_info("{} 已安装/更新至 {} 并成功编译。".format(WORKSPACE_NAME, TARGET_DIR))
-
-        # 询问是否重启
-        answer = input("输入 y 或 Y 确认重启，或按其他任意键取消: ")
-        if answer.lower() == 'y':
-            PrintUtils.print_info("系统即将重启...")
-            CmdTask("sudo reboot").run()
         else:
-            PrintUtils.print_info("已取消重启。脚本执行结束。")
+            PrintUtils.print_info("当前用户：{}".format(current_user))
+
+        # 2. 检查本地仓库是否存在
+        if os.path.exists(LOCAL_DIR):
+            PrintUtils.print_info("发现本地仓库 {}，开始更新...".format(LOCAL_DIR))
+            # 进入仓库目录
+            os.chdir(LOCAL_DIR)
+            # 检查当前分支是否与需要的分支一致，如果不一致，切换分支
+            cmd_current_branch = "git rev-parse --abbrev-ref HEAD"
+            result = subprocess.run(cmd_current_branch, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if result.returncode == 0:
+                current_branch = result.stdout.strip()
+                if current_branch != REPO_BRANCH:
+                    cmd_checkout_branch = "git checkout {}".format(REPO_BRANCH)
+                    checkout_process = subprocess.run(cmd_checkout_branch, shell=True)
+                    if checkout_process.returncode != 0:
+                        PrintUtils.print_error("切换到分支 {} 失败。".format(REPO_BRANCH))
+                        return
+            else:
+                PrintUtils.print_error("获取当前分支失败，无法更新仓库。")
+                return
+            # 拉取最新代码
+            cmd_git_pull = "git pull origin {}".format(REPO_BRANCH)
+            pull_process = subprocess.run(cmd_git_pull, shell=True)
+            if pull_process.returncode != 0:
+                PrintUtils.print_error("更新仓库失败，请检查网络连接和仓库访问权限。")
+                return
+            PrintUtils.print_info("仓库已更新。")
+        else:
+            # 仓库不存在，进行克隆
+            PrintUtils.print_info("本地仓库不存在，开始克隆...")
+            clone_command = "git clone -b {} {} {}".format(REPO_BRANCH, REPO_URL, LOCAL_DIR)
+            clone_process = subprocess.run(clone_command, shell=True)
+            if clone_process.returncode != 0:
+                PrintUtils.print_error("克隆仓库失败，请检查网络连接和仓库访问权限。")
+                return
+            PrintUtils.print_info("仓库已克隆至 {}。".format(LOCAL_DIR))
+
+        # 3. 编译工程
+        PrintUtils.print_info("开始编译工程...")
+        os.chdir(LOCAL_DIR)
+        # 检查并加载 ROS 环境
+        ros_setup = "/opt/ros/{}/setup.bash".format(ROS_DISTRO)
+        if not os.path.exists(ros_setup):
+            PrintUtils.print_error("找不到 ROS 环境设置文件 {}，请检查 ROS 是否正确安装。".format(ros_setup))
+            return
+        # 构建编译命令，确保加载 ROS 环境
+        build_command = "source {} && catkin build".format(ros_setup)
+        build_process = subprocess.run(build_command, shell=True, executable='/bin/bash')
+        if build_process.returncode != 0:
+            PrintUtils.print_error("编译失败，请检查编译输出以获取详细信息。")
+            return
+        PrintUtils.print_info("工程已成功编译。")
+
+        # 4. 提示完成
+        PrintUtils.print_info("sim2real_master 工程已更新并编译完成。")
