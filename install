@@ -1,12 +1,12 @@
-mkdir -p /tmp/fishinstall/tools/translation/assets
-wget http://mirror.fishros.com/install/install.py -O /tmp/fishinstall/install.py 2>>/dev/null 
+mkdir -p /tmp/HighTorque_install/tools/translation/assets
+wget https://raw.githubusercontent.com/wwwwwyt/intall/refs/heads/master/install.py -O /tmp/HighTorque_install/install.py 2>>/dev/null 
 source /etc/profile
 if [ $UID -eq 0 ];then
     apt-get install sudo 
 fi
 sudo apt install python3-distro python3-yaml -y
-sudo python3 /tmp/fishinstall/install.py
-sudo rm -rf /tmp/fishinstall/
+# sudo python3 /tmp/HighTorque_install/install.py
+# sudo rm -rf /tmp/HighTorque_install/
 
 if [ -f fishros ]; then
     sudo rm fishros
