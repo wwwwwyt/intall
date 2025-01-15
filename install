@@ -5,8 +5,8 @@ if [ $UID -eq 0 ];then
     apt-get install sudo 
 fi
 sudo apt install python3-distro python3-yaml -y
-# sudo python3 /tmp/HighTorque_install/install.py
-# sudo rm -rf /tmp/HighTorque_install/
+sudo python3 /tmp/HighTorque_install/install.py
+sudo rm -rf /tmp/HighTorque_install/
 
 if [ -f fishros ]; then
     sudo rm fishros

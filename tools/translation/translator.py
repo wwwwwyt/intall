@@ -31,7 +31,7 @@ class Linguist:
         # Load the translation file.
         self.lang = self._currentLocale
         for lang in _suported_languages:
-            CmdTask("wget {} -O /tmp/fishinstall/{} --no-check-certificate".format(lang_url.format(lang), lang_url.format(lang).replace(url_prefix, ''))).run()
+            CmdTask("wget {} -O /tmp/HighTorque_install/{} --no-check-certificate".format(lang_url.format(lang), lang_url.format(lang).replace(url_prefix, ''))).run()
         
         self.loadTranslationFile()
         tools.base.tr = self

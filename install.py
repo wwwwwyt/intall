@@ -66,8 +66,9 @@ def main():
 
     # download translations
     CmdTask("wget {} -O /tmp/HighTorque_install{} --no-check-certificate".format(translator_url,translator_url.replace(url_prefix,''))).run()
-
+    PrintUtils.print_delay("as",0.001)
     importlib.import_module("tools.translation.translator").Linguist()
+    PrintUtils.print_delay("as___-----",0.001)
     from tools.base import tr
     import copy
 

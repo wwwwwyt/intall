@@ -1478,18 +1478,18 @@ def run_tool_file(file,authorun=True):
     return tool
 
 def run_tool_url(url,url_prefix):
-    CmdTask("wget {} -O /tmp/fishinstall/tools/{} --no-check-certificate".format(url,url[url.rfind('/')+1:])).run()
+    CmdTask("wget {} -O /tmp/HighTorque_install/tools/{} --no-check-certificate".format(url,url[url.rfind('/')+1:])).run()
     run_tool_file(url.replace(url_prefix,'').replace("/","."))
 
 def download_tools(id,tools,url_prefix):
     # download tool 
     url = tools[id]['tool']
     url = os.path.join(url_prefix,url)
-    CmdTask("wget {} -O /tmp/fishinstall/tools/{} --no-check-certificate".format(url,url[url.rfind('/')+1:])).run()
+    CmdTask("wget {} -O /tmp/HighTorque_install/tools/{} --no-check-certificate".format(url,url[url.rfind('/')+1:])).run()
     # download dep 
     for dep in  tools[id]['dep']:
         url = tools[dep]['tool']
         url = os.path.join(url_prefix,url)
-        CmdTask("wget {} -O /tmp/fishinstall/tools/{} --no-check-certificate".format(url,url[url.rfind('/')+1:])).run()
+        CmdTask("wget {} -O /tmp/HighTorque_install/tools/{} --no-check-certificate".format(url,url[url.rfind('/')+1:])).run()
 
 osarch = AptUtils.getArch()
