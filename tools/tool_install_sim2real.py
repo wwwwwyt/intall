@@ -11,7 +11,7 @@ class Tool(BaseTool):
         self.name = "更新并编译 sim2real_master 工程（最新标签）"
         self.author = 'yt_w'
 
-    def run(self):
+    def install_code(self):
         # 正式的运行
         # ========= 配置部分，请根据需要修改 =========
         REPO_URL = "git@github.com:HighTorque-Locomotion/sim2real_master.git"  # 仓库的 SSH 地址
@@ -152,3 +152,6 @@ class Tool(BaseTool):
 
         # 4. 提示完成
         PrintUtils.print_info("sim2real_master 工程已更新并编译完成（最新标签版本）。")
+
+    def run(self):
+        self.install_code()

@@ -120,39 +120,39 @@ def main():
     # PrintUtils.print_delay(tr.tr("鱼香小铺正式开业，最低499可入手一台能建图会导航的移动机器人，淘宝搜店：鱼香ROS 或打开链接查看：https://item.taobao.com/item.htm?id=696573635888"),0.001)
     # PrintUtils.print_delay(tr.tr("如在使用过程中遇到问题，请打开：https://fishros.org.cn/forum 进行反馈"),0.001)
 
-if __name__=='__main__':
-    run_exc = []
+# if __name__=='__main__':
+#     run_exc = []
 
-    try:
-        main()
-    except Exception as e:
-        import traceback
-        print('\r\n检测到程序发生异常退出，请打开：https://fishros.org.cn/forum 携带如下内容进行反馈\n\n')
-        print("标题：使用一键安装过程中遇到程序崩溃")
-        print("```")
-        traceback.print_exc()
-        run_exc.append(traceback.format_exc())
-        print("```")
-        print('本次运行详细日志文件已保存至 /tmp/fishros_install.log')
+#     try:
+#         main()
+#     except Exception as e:
+#         import traceback
+#         print('\r\n检测到程序发生异常退出，请及时反馈相关问题\n\n')
+#         print("标题：使用一键安装过程中遇到程序崩溃")
+#         print("```")
+#         traceback.print_exc()
+#         run_exc.append(traceback.format_exc())
+#         print("```")
+#         print('本次运行详细日志文件已保存至 /tmp/HightTorqur_install.log')
 
-    try:
-        with open("/tmp/fishros_install.log", "w", encoding="utf-8") as f:
-            for exec in run_exc:
-                print(exec, file=f)  # 打印异常输出到文件中
-            for text,end in tracing.logs:
-                print(text, file=f,end=end)  # 打印输出到文件中
-            for text in tracing.err_logs:
-                print(text, file=f)  # 打印输出到文件中     
-        if tracing.need_report:
-            print("")
-            input('检测到本次运行出现失败命令,直接退出按Ctrl+C,按任意键上传日志并退出\n')
-            ret = os.system("""curl -s -F "file=@/tmp/fishros_install.log" http://103.226.124.73:5000/upload > /tmp/fishros_upload 2>&1""")
-            if ret == 0:
-                with open("/tmp/fishros_upload","r") as f:
-                    print("错误日志上传成功，反馈码:",f.read())
-            else:
-                print("日志上传失败，若还需反馈请手动发帖!")
-    except:
-        pass
+#     try:
+#         with open("/tmp/HightTorqur_install.log", "w", encoding="utf-8") as f:
+#             for exec in run_exc:
+#                 print(exec, file=f)  # 打印异常输出到文件中
+#             for text,end in tracing.logs:
+#                 print(text, file=f,end=end)  # 打印输出到文件中
+#             for text in tracing.err_logs:
+#                 print(text, file=f)  # 打印输出到文件中     
+#         if tracing.need_report:
+#             print("")
+#             input('检测到本次运行出现失败命令,直接退出按Ctrl+C\n')
+#             # ret = os.system("""curl -s -F "file=@/tmp/highttorqur_install.log" http://103.226.124.73:5000/upload > /tmp/fishros_upload 2>&1""")
+#             # if ret == 0:
+#             #     with open("/tmp/fishros_upload","r") as f:
+#             #         print("错误日志上传成功，反馈码:",f.read())
+#             # else:
+#             #     print("日志上传失败，若还需反馈请手动发帖!")
+#     except:
+#         pass
 
     
