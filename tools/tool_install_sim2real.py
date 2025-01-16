@@ -15,7 +15,7 @@ class Tool(BaseTool):
         # 正式的运行
         # ========= 配置部分，请根据需要修改 =========
         REPO_URL = "git@github.com:HighTorque-Locomotion/sim2real_master.git"  # 仓库的 SSH 地址git clone https://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@github.com/HighTorque-Locomotion/sim2real_master.git
-        REPO_URL_TOKEN = "https://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@github.com/HighTorque-Locomotion"
+        REPO_URL_TOKEN = "github.com/HighTorque-Locomotion"
         REPO_BASE_URL = "git@github.com:HighTorque-Locomotion"
         REPO_DIR_NAME = "sim2real_master"
         REPO_NAME_pi = "sim2real_master"
@@ -98,6 +98,9 @@ class Tool(BaseTool):
                     PrintUtils.print_error("输入无效，请输入数字 1 或 2。")
             PrintUtils.print_info("您选择了机器人类型 {}。".format(robot_type))
 
+            code_token = input("请输入code token，然后按回车键确认：")
+            PrintUtils.print_info("您选择了机器人类型 {}。".format(code_token))
+
             # 根据机器人类型设置仓库名
             if robot_type == '1':
                 REPO_NAME = REPO_NAME_pi 
@@ -107,7 +110,7 @@ class Tool(BaseTool):
             REPO_URL = "{}/{}.git".format(REPO_URL_TOKEN, REPO_NAME)
 
             # 克隆仓库
-            clone_command = "git clone {} {}".format(REPO_URL, LOCAL_DIR)
+            clone_command = "git clone https://{}@{} {}".format(code_token, REPO_URL, LOCAL_DIR)
             # clone_command = "git clone https://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@github.com/HighTorque-Locomotion/sim2real_master.git"
             clone_process = subprocess.run(clone_command, shell=True)
             if clone_process.returncode != 0:
