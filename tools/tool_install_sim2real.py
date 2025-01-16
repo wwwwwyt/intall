@@ -105,9 +105,6 @@ class Tool(BaseTool):
                     PrintUtils.print_error("输入无效，请输入数字 1 或 2。")
             PrintUtils.print_info("您选择了机器人类型 {}。".format(robot_type))
 
-            code_token = input("请输入code token，然后按回车键确认：")
-            PrintUtils.print_info("您选择了机器人类型 {}。".format(code_token))
-
             # 根据机器人类型设置仓库名
             if robot_type == '1':
                 REPO_NAME = REPO_NAME_pi 
