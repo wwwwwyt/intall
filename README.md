@@ -12,7 +12,14 @@
 ```
 wget https://raw.githubusercontent.com/wwwwwyt/intall/refs/heads/master/install -O hightorque && . hightorque
 ```
-
+## 环境配置
+### git凭证
+```
+cd
+git config --global credential.helper store
+nano ~/.git-credentials
+```
+按以下格式复制到该文件下 `https://『用户名』:『token』@github.com`
 
 ## 脚本目录
 -tools

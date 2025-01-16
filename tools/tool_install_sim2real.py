@@ -2,6 +2,7 @@
 import os
 import getpass
 import subprocess
+from pwd import getpwnam
 from .base import BaseTool
 from .base import PrintUtils, CmdTask
 
@@ -16,30 +17,36 @@ class Tool(BaseTool):
         # ========= 配置部分，请根据需要修改 =========
         REPO_URL = "git@github.com:HighTorque-Locomotion/sim2real_master.git"  # 仓库的 SSH 地址git clone https://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@github.com/HighTorque-Locomotion/sim2real_master.git
         REPO_URL_TOKEN = "github.com/HighTorque-Locomotion"
-        REPO_BASE_URL = "git@github.com:HighTorque-Locomotion"
+        REPO_BASE_URL = "https://github.com/HighTorque-Locomotion"
         REPO_DIR_NAME = "sim2real_master"
         REPO_NAME_pi = "sim2real_master"
         REPO_NAME_hi = "sim2real_master"
         HOME_DIR = os.path.expanduser("~")
-        LOCAL_DIR = os.path.join(HOME_DIR, REPO_DIR_NAME)
+        # LOCAL_DIR = os.path.join(HOME_DIR, REPO_DIR_NAME)
         ROS_DISTRO = "noetic"  # 根据您的 ROS 版本修改，例如 "melodic"、"noetic" 等
 
         # ========= 开始执行步骤 =========
-        # 1. 检查是否以 root 用户身份运行脚本
-        # current_user = getpass.getuser()
-        # if current_user == 'root':
-        #     PrintUtils.print_error("请不要以 root 用户身份运行此脚本。")
-        #     return
-        # else:
-        #     PrintUtils.print_info("当前用户：{}".format(current_user))
+        # 1. 获取目标用户名
+        PrintUtils.print_info("正在获取用户名...")
+        if os.getenv('SUDO_USER'):
+            # 如果以 sudo 方式运行，获取原始用户
+            target_user = os.getenv('SUDO_USER')
+            PrintUtils.print_info(f"检测到以 sudo 方式运行，目标用户：{target_user}")
+        else:
+            # 否则获取当前用户
+            target_user = getpass.getuser()
+            PrintUtils.print_info(f"当前用户：{target_user}")
 
-        # # 检查 SSH_AUTH_SOCK
-        # ssh_auth_sock = os.environ.get('SSH_AUTH_SOCK')
-        # if not ssh_auth_sock:
-        #     PrintUtils.print_error("SSH_AUTH_SOCK 未设置，可能无法访问 SSH 代理。")
-        #     return
-        # else:
-        #     PrintUtils.print_info("SSH_AUTH_SOCK: {}".format(ssh_auth_sock))
+        # 获取目标用户的主目录
+        try:
+            target_user_info = getpwnam(target_user)
+            HOME_DIR = target_user_info.pw_dir
+            PrintUtils.print_info(f"目标用户的主目录：{HOME_DIR}")
+        except KeyError:
+            PrintUtils.print_error(f"无法获取用户 {target_user} 的主目录。")
+            return
+
+        LOCAL_DIR = os.path.join(HOME_DIR, REPO_DIR_NAME)
 
         # 2. 检查本地仓库是否存在
         if os.path.exists(LOCAL_DIR):
@@ -107,10 +114,10 @@ class Tool(BaseTool):
             else:
                 REPO_NAME = REPO_NAME_hi  
 
-            REPO_URL = "{}/{}.git".format(REPO_URL_TOKEN, REPO_NAME)
+            REPO_URL = "{}/{}.git".format(REPO_BASE_URL, REPO_NAME)
 
             # 克隆仓库
-            clone_command = "git clone https://{}@{} {}".format(code_token, REPO_URL, LOCAL_DIR)
+            clone_command = "git clone {} {}".format(REPO_URL, LOCAL_DIR)
             # clone_command = "git clone https://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@github.com/HighTorque-Locomotion/sim2real_master.git"
             clone_process = subprocess.run(clone_command, shell=True)
             if clone_process.returncode != 0:
