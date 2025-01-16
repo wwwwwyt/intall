@@ -33,13 +33,13 @@ class Tool(BaseTool):
         # else:
         #     PrintUtils.print_info("当前用户：{}".format(current_user))
 
-        # 检查 SSH_AUTH_SOCK
-        ssh_auth_sock = os.environ.get('SSH_AUTH_SOCK')
-        if not ssh_auth_sock:
-            PrintUtils.print_error("SSH_AUTH_SOCK 未设置，可能无法访问 SSH 代理。")
-            return
-        else:
-            PrintUtils.print_info("SSH_AUTH_SOCK: {}".format(ssh_auth_sock))
+        # # 检查 SSH_AUTH_SOCK
+        # ssh_auth_sock = os.environ.get('SSH_AUTH_SOCK')
+        # if not ssh_auth_sock:
+        #     PrintUtils.print_error("SSH_AUTH_SOCK 未设置，可能无法访问 SSH 代理。")
+        #     return
+        # else:
+        #     PrintUtils.print_info("SSH_AUTH_SOCK: {}".format(ssh_auth_sock))
 
         # 2. 检查本地仓库是否存在
         if os.path.exists(LOCAL_DIR):
