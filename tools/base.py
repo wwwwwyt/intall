@@ -1456,7 +1456,7 @@ class BaseTool():
 
     def init(self):
         # 初始化部分
-        PrintUtils.print_delay(tr.tr("欢迎使用{},本工具由作者{}提供").format(self.name,self.author))
+        PrintUtils.print_delay(tr.tr("当前任务为{},由作者{}提供").format(self.name,self.author))
     
     def run(self):
         # 运行该任务
