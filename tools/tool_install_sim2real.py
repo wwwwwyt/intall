@@ -14,7 +14,8 @@ class Tool(BaseTool):
     def install_code(self):
         # 正式的运行
         # ========= 配置部分，请根据需要修改 =========
-        REPO_URL = "git@github.com:HighTorque-Locomotion/sim2real_master.git"  # 仓库的 SSH 地址
+        REPO_URL = "git@github.com:HighTorque-Locomotion/sim2real_master.git"  # 仓库的 SSH 地址git clone https://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@github.com/HighTorque-Locomotion/sim2real_master.git
+        REPO_URL_TOKEN = "https://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@github.com/HighTorque-Locomotion"
         REPO_BASE_URL = "git@github.com:HighTorque-Locomotion"
         REPO_DIR_NAME = "sim2real_master"
         REPO_NAME_pi = "sim2real_master"
@@ -103,10 +104,11 @@ class Tool(BaseTool):
             else:
                 REPO_NAME = REPO_NAME_hi  
 
-            REPO_URL = "{}/{}.git".format(REPO_BASE_URL, REPO_NAME)
+            REPO_URL = "{}/{}.git".format(REPO_URL_TOKEN, REPO_NAME)
 
             # 克隆仓库
             clone_command = "git clone {} {}".format(REPO_URL, LOCAL_DIR)
+            # clone_command = "git clone https://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@github.com/HighTorque-Locomotion/sim2real_master.git"
             clone_process = subprocess.run(clone_command, shell=True)
             if clone_process.returncode != 0:
                 PrintUtils.print_error("克隆仓库失败，请检查网络连接和仓库访问权限。")
