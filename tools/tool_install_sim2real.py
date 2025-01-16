@@ -26,12 +26,12 @@ class Tool(BaseTool):
 
         # ========= 开始执行步骤 =========
         # 1. 检查是否以 root 用户身份运行脚本
-        current_user = getpass.getuser()
-        if current_user == 'root':
-            PrintUtils.print_error("请不要以 root 用户身份运行此脚本。")
-            return
-        else:
-            PrintUtils.print_info("当前用户：{}".format(current_user))
+        # current_user = getpass.getuser()
+        # if current_user == 'root':
+        #     PrintUtils.print_error("请不要以 root 用户身份运行此脚本。")
+        #     return
+        # else:
+        #     PrintUtils.print_info("当前用户：{}".format(current_user))
 
         # 检查 SSH_AUTH_SOCK
         ssh_auth_sock = os.environ.get('SSH_AUTH_SOCK')
