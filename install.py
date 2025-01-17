@@ -21,8 +21,8 @@ tools_type_map = {
 
 tools ={
     1: {'tip':'一键更新：sim2real运控代码',                 'type':CODE_UPDATES,     'tool':'tools/tool_install_sim2real.py' ,'dep':[] },
-    2: {'tip':'一键安装:rl运控环境（openvino,pinocchio,eigen）',             'type':INSTALL_SOFTWARE,     'tool':'tools/tool_install_github_desktop.py' ,'dep':[] },
-    3: {'tip':'一键安装:',                 'type':INSTALL_SOFTWARE,    'tool':'tools/tool_config_rosdep.py' ,'dep':[] },
+    # 2: {'tip':'一键安装:rl运控环境（openvino,pinocchio,eigen）',             'type':INSTALL_SOFTWARE,     'tool':'tools/tool_install_github_desktop.py' ,'dep':[] },
+    # 3: {'tip':'一键安装:',                 'type':INSTALL_SOFTWARE,    'tool':'tools/tool_config_rosdep.py' ,'dep':[] },
     # 4: {'tip':'一键配置:ROS环境(快速更新ROS环境设置,自动生成环境选择)',     'type':INSTALL_ROS,     'tool':'tools/tool_config_rosenv.py' ,'dep':[] },
     # 5: {'tip':'一键配置:系统源(更换系统源,支持全版本Ubuntu系统)',           'type':CONFIG_TOOL,    'tool':'tools/tool_config_system_source.py' ,'dep':[1] },
     # 6: {'tip':'一键安装:NodeJS环境',      'type':INSTALL_SOFTWARE,     'tool':'tools/tool_install_nodejs.py' ,'dep':[] },
