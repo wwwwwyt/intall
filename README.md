@@ -20,7 +20,12 @@ git config --global credential.helper store
 nano ~/.git-credentials
 ```
 按以下格式复制到该文件下 `https://『用户名』:『token』@github.com`
-
+- 如果root用户下git凭证
+```
+sudo -i
+git config --global credential.helper store
+nano ~/.git-credentials
+```
 ## 脚本目录
 -tools
 
