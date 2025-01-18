@@ -1,39 +1,50 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 import getpass
 import subprocess
 from pwd import getpwnam
-from .base import BaseTool
-from .base import PrintUtils, CmdTask
+
+# 如果存在相对导入的问题，请修改为绝对导入或调整 sys.path
+try:
+    from .base import BaseTool
+    from .base import PrintUtils, CmdTask
+except ImportError:
+    # 调整 sys.path，确保可以导入 base 模块
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from base import BaseTool
+    from base import PrintUtils, CmdTask
 
 class Tool(BaseTool):
     def __init__(self):
         self.type = BaseTool.TYPE_INSTALL
-        self.name = "更新并编译 sim2real_master 工程（最新标签）"
+        self.name = "更新并编译 sim2real_master 工程（指定标签版本）"
         self.author = 'yt_w'
 
     def install_code(self):
-        # 正式的运行
         # ========= 配置部分，请根据需要修改 =========
-        REPO_URL = "git@github.com:HighTorque-Locomotion/sim2real_master.git"  # 仓库的 SSH 地址git clone https://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@github.com/HighTorque-Locomotion/sim2real_master.git
-        REPO_URL_TOKEN = "github.com/HighTorque-Locomotion"
         REPO_BASE_URL = "https://github.com/HighTorque-Locomotion"
         REPO_DIR_NAME = "sim2real_master"
-        REPO_NAME_pi = "sim2real_master"
-        REPO_NAME_hi = "sim2real_master"
-        HOME_DIR = os.path.expanduser("~")
-        # LOCAL_DIR = os.path.join(HOME_DIR, REPO_DIR_NAME)
+        REPO_NAME_PI = "sim2real_master"
+        REPO_NAME_HI = "sim2real_master"
         ROS_DISTRO = "noetic"  # 根据您的 ROS 版本修改，例如 "melodic"、"noetic" 等
 
         # ========= 开始执行步骤 =========
-        # 1. 获取目标用户名
-        PrintUtils.print_info("正在获取用户名...")
-        if os.getenv('SUDO_USER'):
-            # 如果以 sudo 方式运行，获取原始用户
+        # 1. 检测当前用户是否为 root
+        if os.geteuid() == 0:
+            # 获取目标普通用户名
             target_user = os.getenv('SUDO_USER')
-            PrintUtils.print_info(f"检测到以 sudo 方式运行，目标用户：{target_user}")
+            if not target_user:
+                PrintUtils.print_error("无法获取普通用户用户名，请以普通用户身份运行脚本。")
+                return
+            else:
+                PrintUtils.print_info(f"检测到当前用户为 root，将以普通用户 {target_user} 的身份重新执行脚本。")
+                python_executable = sys.executable
+                script_path = os.path.abspath(__file__)
+                args = [script_path] + sys.argv[1:]
+                subprocess.run(['sudo', '-u', target_user, python_executable] + args)
+                sys.exit(0)
         else:
-            # 否则获取当前用户
             target_user = getpass.getuser()
             PrintUtils.print_info(f"当前用户：{target_user}")
 
@@ -53,48 +64,12 @@ class Tool(BaseTool):
             PrintUtils.print_info("发现本地仓库 {}，开始更新...".format(LOCAL_DIR))
             # 进入仓库目录
             os.chdir(LOCAL_DIR)
-            # 获取最新的标签
-            PrintUtils.print_info("获取最新的标签...")
-            fetch_tags_cmd = "git fetch --tags"
-            subprocess.run(fetch_tags_cmd, shell=True)
-            latest_tag_cmd = "git describe --tags `git rev-list --tags --max-count=1`"
-            result = subprocess.run(latest_tag_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            if result.returncode == 0:
-                latest_tag = result.stdout.strip()
-                PrintUtils.print_info("最新的标签是：{}".format(latest_tag))
-                # 检查当前是否已经在最新的标签上
-                current_tag_cmd = "git describe --tags"
-                current_tag_result = subprocess.run(current_tag_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-                if current_tag_result.returncode == 0:
-                    current_tag = current_tag_result.stdout.strip()
-                    if current_tag != latest_tag:
-                        # 切换到最新的标签
-                        checkout_cmd = "git checkout {}".format(latest_tag)
-                        checkout_process = subprocess.run(checkout_cmd, shell=True)
-                        if checkout_process.returncode != 0:
-                            PrintUtils.print_error("切换到最新标签 {} 失败。".format(latest_tag))
-                            return
-                        else:
-                            PrintUtils.print_info("已切换到最新标签 {}。".format(latest_tag))
-                    else:
-                        PrintUtils.print_info("当前已经是最新的标签 {}。".format(current_tag))
-                else:
-                    # 当前不是在标签上，切换到最新标签
-                    checkout_cmd = "git checkout {}".format(latest_tag)
-                    checkout_process = subprocess.run(checkout_cmd, shell=True)
-                    if checkout_process.returncode != 0:
-                        PrintUtils.print_error("切换到最新标签 {} 失败。".format(latest_tag))
-                        return
-                    else:
-                        PrintUtils.print_info("已切换到最新标签 {}。".format(latest_tag))
-            else:
-                PrintUtils.print_error("获取最新标签失败，请检查网络连接和仓库访问权限。")
-                return
+            # 拉取最新的代码
+            subprocess.run("git fetch", shell=True)
         else:
             # 仓库不存在，进行克隆
-            PrintUtils.print_info("本地仓库不存在，开始克隆...")
-            # 仓库不存在，要求用户输入机器人类型
             PrintUtils.print_info("本地仓库不存在，需要克隆仓库。")
+            # 要求用户输入机器人类型
             robot_type = None
             while robot_type not in ['1', '2']:
                 print("\n请选择机器人类型：")
@@ -107,43 +82,65 @@ class Tool(BaseTool):
 
             # 根据机器人类型设置仓库名
             if robot_type == '1':
-                REPO_NAME = REPO_NAME_pi 
+                REPO_NAME = REPO_NAME_PI
             else:
-                REPO_NAME = REPO_NAME_hi  
+                REPO_NAME = REPO_NAME_HI
 
             REPO_URL = "{}/{}.git".format(REPO_BASE_URL, REPO_NAME)
 
             # 克隆仓库
             clone_command = "git clone {} {}".format(REPO_URL, LOCAL_DIR)
-            # clone_command = "git clone https://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@github.com/HighTorque-Locomotion/sim2real_master.git"
             clone_process = subprocess.run(clone_command, shell=True)
             if clone_process.returncode != 0:
                 PrintUtils.print_error("克隆仓库失败，请检查网络连接和仓库访问权限。")
                 return
             PrintUtils.print_info("仓库已克隆至 {}。".format(LOCAL_DIR))
             os.chdir(LOCAL_DIR)
-            # 获取最新的标签
-            PrintUtils.print_info("获取最新的标签...")
-            fetch_tags_cmd = "git fetch --tags"
-            subprocess.run(fetch_tags_cmd, shell=True)
-            latest_tag_cmd = "git describe --tags `git rev-list --tags --max-count=1`"
-            result = subprocess.run(latest_tag_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            if result.returncode == 0:
-                latest_tag = result.stdout.strip()
-                PrintUtils.print_info("最新的标签是：{}".format(latest_tag))
-                # 切换到最新的标签
-                checkout_cmd = "git checkout {}".format(latest_tag)
+
+        # 3. 获取可用的标签列表
+        PrintUtils.print_info("获取可用的标签列表...")
+        fetch_tags_cmd = "git fetch --tags"
+        subprocess.run(fetch_tags_cmd, shell=True)
+        tag_list_cmd = "git tag"
+        result = subprocess.run(tag_list_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if result.returncode == 0:
+            tags = result.stdout.strip().split('\n')
+            if not tags:
+                PrintUtils.print_error("未找到任何标签，请检查仓库是否包含标签。")
+                return
+            else:
+                PrintUtils.print_info("可用的标签列表：")
+                for idx, tag in enumerate(tags):
+                    print(f"{idx + 1}. {tag}")
+                # 让用户选择标签
+                selected_tag = None
+                while selected_tag is None:
+                    user_input = input("请输入要切换到的标签编号或名称，然后按回车键确认：").strip()
+                    if user_input.isdigit():
+                        idx = int(user_input) - 1
+                        if 0 <= idx < len(tags):
+                            selected_tag = tags[idx]
+                        else:
+                            PrintUtils.print_error("输入的编号超出范围，请重新输入。")
+                    else:
+                        if user_input in tags:
+                            selected_tag = user_input
+                        else:
+                            PrintUtils.print_error("输入的标签名称不存在，请重新输入。")
+                PrintUtils.print_info(f"您选择了标签：{selected_tag}")
+                # 切换到选定的标签
+                checkout_cmd = "git checkout {}".format(selected_tag)
                 checkout_process = subprocess.run(checkout_cmd, shell=True)
                 if checkout_process.returncode != 0:
-                    PrintUtils.print_error("切换到最新标签 {} 失败。".format(latest_tag))
+                    PrintUtils.print_error(f"切换到标签 {selected_tag} 失败。")
                     return
                 else:
-                    PrintUtils.print_info("已切换到最新标签 {}。".format(latest_tag))
-            else:
-                PrintUtils.print_error("获取最新标签失败，请检查网络连接和仓库访问权限。")
-                return
+                    PrintUtils.print_info(f"已切换到标签 {selected_tag}。")
+        else:
+            PrintUtils.print_error("获取标签列表失败，请检查网络连接和仓库访问权限。")
+            return
 
-        # 3. 编译工程
+        # 4. 编译工程
         PrintUtils.print_info("开始编译工程...")
         os.chdir(LOCAL_DIR)
         # 检查并加载 ROS 环境
@@ -159,8 +156,8 @@ class Tool(BaseTool):
             return
         PrintUtils.print_info("工程已成功编译。")
 
-        # 4. 提示完成
-        PrintUtils.print_info("sim2real_master 工程已更新并编译完成（最新标签版本）。")
+        # 5. 提示完成
+        PrintUtils.print_info("sim2real_master 工程已更新并编译完成（标签版本：{}）。".format(selected_tag))
 
     def run(self):
         self.install_code()
